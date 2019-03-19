@@ -19,7 +19,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -74,14 +73,17 @@ public class showImage extends AppCompatActivity {
             circles = new Vector<>();
             ellipses = new Vector<>();
 
-            FileInputStream fis = openFileInput("updated_"+file);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-//                sb.append(line);
-//            }
+//            FileInputStream fis = openFileInput(file);
+//            InputStreamReader isr = new InputStreamReader(fis);
+//            BufferedReader bufferedReader = new BufferedReader(isr);
+//            StringBuilder sb = new StringBuilder();
+//            String line;
+//            while ((line = bufferedReader.readLine()) != null) {
+
+            reader = new BufferedReader(new InputStreamReader(getAssets().open(file)));
+            String         line = null;
+            StringBuilder  stringBuilder = new StringBuilder();
+            while((line = reader.readLine()) != null) {
                 Log.d("Line ",line);
                 String[] a = line.split("<");
                 for(int i=0;i<a.length;i++){
@@ -149,7 +151,7 @@ public class showImage extends AppCompatActivity {
                                 Log.d("rpos and ch: ",String.valueOf(rpos)+" "+ ch);
 
 
-                                int r = Integer.parseInt(a[i].substring(rpos + 4, index));
+                                int r = Integer.parseInt(a[i].substring(rpos + 3, index));
 
                                 cor[0] = cx;
                                 cor[1] = cy;
@@ -198,8 +200,13 @@ public class showImage extends AppCompatActivity {
             int cx = c[0];
             int cy = c[1];
             int r = c[2];
+            Double dist = Math.abs(Math.sqrt(lengthSquared(x,y,cx,cy)) - r);
 
-            if(Math.abs(Math.sqrt(lengthSquared(x,y,cx,cy)) - r) <= threshold)return true;
+//            Log.e("toVibrate","Circle points are: "+String.valueOf(cx)+" "+String.valueOf(cy)+" "+String.valueOf(r));
+//
+//            Log.e("toVibrate","Dist is: "+String.valueOf(dist));
+
+            if(dist <= threshold)return true;
         }
 
         return false;
@@ -277,8 +284,8 @@ public class showImage extends AppCompatActivity {
         int height = size.y;
 //        Log.e("Width", "" + width);
 //        Log.e("height", "" + height);
-//        int minwh = Integer.min(width,height);
-        img.setLayoutParams(new ConstraintLayout.LayoutParams(width,height));
+        int minwh = Integer.min(width,height);
+        img.setLayoutParams(new ConstraintLayout.LayoutParams(1000,1000));
 //        Log.d("Position:", "x: "+String.valueOf(viewCoords[0])+" and y: "+String.valueOf(viewCoords[1]));
 //        Log.d("image coord:", "x: "+String.valueOf(img.getWidth())+" and y: "+String.valueOf(img.getHeight()));
 
