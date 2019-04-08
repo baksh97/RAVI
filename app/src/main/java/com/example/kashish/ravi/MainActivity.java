@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     String TAG = "MainActivity";
     private Spinner s;
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<String> files = new ArrayList<>();
         files.add("Complex1.svg");
         files.add("1_svg_1.svg");
-        files.add("Circle_1.svg");
+        files.add("Circle.svg");
         files.add("Rectangle.svg");
 //        files.add("Semicircle.svg");
         files.add("squre.svg");
@@ -74,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
 
         scaleSVG ss = new scaleSVG();
         ss.scale(this, "Complex1.svg",width,height);
-//        ss.scale(this, "Complex2.svg",width,height);
-//        ss.scale(this, "Circle.svg",width,height);
+        ss.scale(this, "Complex2.svg",width,height);
+        ss.scale(this, "Circle.svg",width,height);
         ss.scale(this, "Rectangle.svg",width,height);
         ss.scale(this, "squre.svg",width,height);
         ss.scale(this, "Star.svg",width,height);

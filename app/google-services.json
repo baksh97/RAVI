@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "951913684513",
+    "firebase_url": "https://ravi-1fcf7.firebaseio.com",
+    "project_id": "ravi-1fcf7",
+    "storage_bucket": "ravi-1fcf7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951913684513:android:48010253b060101f",
+        "android_client_info": {
+          "package_name": "com.example.kashish.ravi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrcLamhc_NCNMsQkT6pYe0kkDP7dgn42c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "951913684513-62n7etj8mcvlc75k4eh8kv6itguqjrv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

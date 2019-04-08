@@ -1,5 +1,6 @@
 package com.example.kashish.ravi;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -7,10 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +26,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+//import com.caverock.androidsvg.SVG;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.larvalabs.svgandroid.SVG;
+import com.larvalabs.svgandroid.SVGParser;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,6 +47,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.BitSet;
 import java.util.Vector;
 
@@ -38,7 +57,10 @@ import static java.lang.String.valueOf;
 
 public class showImage extends AppCompatActivity {
 
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    Uri uri;
+    StorageReference storageRef;
     private static final String TAG = "showImage";
     double scale=1;
     ImageView img;
@@ -76,129 +98,189 @@ public class showImage extends AppCompatActivity {
     }
 
     void readSVG(String fileName){
-        BufferedReader reader = null;
-        try {
-            corners = new Vector<>();
-            circles = new Vector<>();
-            ellipses = new Vector<>();
+//        BufferedReader reader = null;
+//        try {
 
-            AssetManager am = this.getAssets();
-//            File file = new File(fileName);
-            InputStream fis = am.open(fileName);
 
-            Log.e(TAG,"updated file: "+fileName);
-//            reader = new BufferedReader(new FileReader(file));
-            InputStreamReader isr = new InputStreamReader(fis);
-            Bitmap bmp = null;
-            bmp = BitmapFactory.decodeStream(fis);
-            img.setImageBitmap(bmp);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
+
+//        try {
+//            FirebaseStorage storage = FirebaseStorage.getInstance();
+////
+//            StorageReference storageRef = storage.getReference();
+////
+//            StorageReference islandRef = storageRef.child(fileName);
+//            File localFile = File.createTempFile(fileName.split(".")[0],"svg");
+//
+//            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                    // Local temp file has been created
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
+////
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+
+//        try {
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+//                    // Local temp file has been created
+//
+                    try {
+                        File file = new File(fileName);
+                        corners = new Vector<>();
+                        circles = new Vector<>();
+                        ellipses = new Vector<>();
+                        String line;
+                        InputStream is = this.openFileInput(fileName);
+                        InputStreamReader isr = new InputStreamReader(is);
+                        BufferedReader reader = new BufferedReader(isr);
+                        while ((line = reader.readLine()) != null) {
 //                sb.append(line);
 //            }
-                Log.d("Line ",line);
-                String[] a = line.split("<");
-                for(int i=0;i<a.length;i++){
+                            Log.d("Line ",line);
+                            String[] a = line.split("<");
+                            for(int i=0;i<a.length;i++){
 //                    String[] stringCor = a[i].split(",");
 //                    cor[0] = Integer.parseInt(stringCor[0]);
 //                    cor[1] = Integer.parseInt(stringCor[1]);
 //                    c.add(cor);
-                    int tagId = -1;
-                    for(int j=0;j<tags.length;j++){
-                        if(a[i].contains(tags[j])){
-                            tagId = j;
-                            Log.e(TAG,"found tag: "+tagId);
-                        }
-                    }
+                                int tagId = -1;
+                                for(int j=0;j<tags.length;j++){
+                                    if(a[i].contains(tags[j])){
+                                        tagId = j;
+                                        Log.e(TAG,"found tag: "+tagId);
+                                    }
+                                }
 
-                    if(tagId !=-1){
-                        switch (tagId){
-                            case 1: {
+                                if(tagId !=-1){
+                                    switch (tagId){
+                                        case 1: {
 
-                                int[] cor1 = new int[4];
+                                            int[] cor1 = new int[4];
 //                                int[] cor2 = new int[2];
 
-                                a[i] = a[i].replaceAll("\\s+", "");
+                                            a[i] = a[i].replaceAll("\\s+", "");
 
-                                int x1pos = a[i].indexOf("x1");
-                                int x2pos = a[i].indexOf("x2");
-                                int y1pos = a[i].indexOf("y1");
-                                int y2pos = a[i].indexOf("y2");
+                                            int x1pos = a[i].indexOf("x1");
+                                            int x2pos = a[i].indexOf("x2");
+                                            int y1pos = a[i].indexOf("y1");
+                                            int y2pos = a[i].indexOf("y2");
 
 //                                String [] b = a[i].split("=");
-                                int x1 = Integer.parseInt(a[i].substring(x1pos + 4, y1pos - 1));
-                                int y1 = Integer.parseInt(a[i].substring(y1pos + 4, x2pos - 1));
-                                int x2 = Integer.parseInt(a[i].substring(x2pos + 4, y2pos - 1));
-                                char ch = a[i].charAt(y2pos + 3);
-                                int index = a[i].indexOf(ch, y2pos + 4);
-                                int y2 = Integer.parseInt(a[i].substring(y2pos + 4, index));
+                                            int x1 = Integer.parseInt(a[i].substring(x1pos + 4, y1pos - 1));
+                                            int y1 = Integer.parseInt(a[i].substring(y1pos + 4, x2pos - 1));
+                                            int x2 = Integer.parseInt(a[i].substring(x2pos + 4, y2pos - 1));
+                                            char ch = a[i].charAt(y2pos + 3);
+                                            int index = a[i].indexOf(ch, y2pos + 4);
+                                            int y2 = Integer.parseInt(a[i].substring(y2pos + 4, index));
 
 
-                                cor1[0] = x1;
-                                cor1[1] = y1;
-                                cor1[2] = x2;
-                                cor1[3] = y2;
+                                            cor1[0] = x1;
+                                            cor1[1] = y1;
+                                            cor1[2] = x2;
+                                            cor1[3] = y2;
 
-                                Log.e(TAG,"ADding corner: "+cor1[0]+" "+cor1[1]+" "+cor1[2]+" "+cor1[3]);
+                                            Log.e(TAG,"ADding corner: "+cor1[0]+" "+cor1[1]+" "+cor1[2]+" "+cor1[3]);
 //                                cor2[0] = x2;
 //                                cor2[1] = y2;
 
-                                corners.add(cor1);
+                                            corners.add(cor1);
 //                                c.add(cor2);
 //                                int y2 = Integer.parseInt(a[i].substring(x1pos+4,y1pos));
-                                break;
-                            }
-                            case 3: {
-                                Log.e(TAG,"found circle");
-                                int[] cor = new int[3];
-                                a[i] = a[i].replaceAll("\\s+", "");
+                                            break;
+                                        }
+                                        case 3: {
+                                            Log.e(TAG,"found circle");
+                                            int[] cor = new int[3];
+                                            a[i] = a[i].replaceAll("\\s+", "");
 
-                                int cxpos = a[i].indexOf("cx=");
-                                int cypos = a[i].indexOf("cy=");
-                                int rpos = a[i].indexOf("r=");
+                                            int cxpos = a[i].indexOf("cx=");
+                                            int cypos = a[i].indexOf("cy=");
+                                            int rpos = a[i].indexOf("r=");
 
 
 
 //                                Toast.makeText(this, "rPos: "+String.valueOf(rpos),Toast.LENGTH_SHORT).show();
 
-                                int cx = Integer.parseInt(a[i].substring(cxpos + 4, cypos - 1));
-                                int cy = Integer.parseInt(a[i].substring(cypos + 4, rpos - 1));
-                                char ch = a[i].charAt(rpos + 2);
-                                int index = a[i].indexOf(ch, rpos + 3);
+                                            int cx = Integer.parseInt(a[i].substring(cxpos + 4, cypos - 1));
+                                            int cy = Integer.parseInt(a[i].substring(cypos + 4, rpos - 1));
+                                            char ch = a[i].charAt(rpos + 2);
+                                            int index = a[i].indexOf(ch, rpos + 3);
 
-                                Log.d("rpos and ch: ",String.valueOf(rpos)+" "+ ch);
+                                            Log.d("rpos and ch: ",String.valueOf(rpos)+" "+ ch+", "+index+", "+a[i].substring(rpos+4,index));
 
 
-                                int r = Integer.parseInt(a[i].substring(rpos + 4, index));
+                                            int r = Integer.parseInt(a[i].substring(rpos + 3, index));
 
-                                Log.e(TAG,"cx: "+cx+", cy: "+cy+" and r: "+r);
+                                            Log.e(TAG,"cx: "+cx+", cy: "+cy+" and r: "+r);
 
-                                cor[0] = cx;
-                                cor[1] = cy;
-                                cor[2] = r;
+                                            cor[0] = cx;
+                                            cor[1] = cy;
+                                            cor[2] = r;
 //                                cor[3] = y2;
 //                                cor2[0] = x2;
 //                                cor2[1] = y2;
 
-                                circles.add(cor);
+                                            circles.add(cor);
 //                                c.add(cor2);
 //                                int y2 = Integer.parseInt(a[i].substring(x1pos+4,y1pos));
-                                break;
+                                            break;
 //                                int y2pos = a[i].indexOf("y2");
+                                        }
+                                    }
+                                }
                             }
                         }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                }
-            }
+//
+//                }
+//            }).addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    // Handle any errors
+//                }
+//            });
+
+
+//            AssetManager am = this.getAssets();
+////            File file = new File(fileName);
+//            InputStream fis = am.open(fileName);
+//            reader = new BufferedReader(new InputStreamReader(getAssets().open(fileName)));
+//            String         line = null;
+//            StringBuilder  stringBuilder = new StringBuilder();
+//            Log.e(TAG,"updated file: "+fileName);
+////            reader = new BufferedReader(new FileReader(file));
+//            InputStreamReader isr = new InputStreamReader(fis);
+//            Bitmap bmp = null;
+//            bmp = BitmapFactory.decodeStream(fis);
+//            img.setImageBitmap(bmp);
+//            BufferedReader bufferedReader = new BufferedReader(isr);
+//            StringBuilder sb = new StringBuilder();
+//            String line;
+
 //            reader.close();
 
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
@@ -244,10 +326,46 @@ public class showImage extends AppCompatActivity {
         }
     }
 
+    void showImageUsingURL(StorageReference storageRef,String fileName){
+        storageRef.child(fileName).getDownloadUrl().addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Toast.makeText(showImage.this, "uri: "+uri.toString(), Toast.LENGTH_SHORT).show();
+                Log.e(TAG,"uri: "+uri.toString());
+                try {
+                    URL url = new URL(uri.toString());
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream inputStream = urlConnection.getInputStream();
+                    SVG svg = SVGParser.getSVGFromInputStream(inputStream);
+                    Drawable drawable = svg.createPictureDrawable();
+//                    return drawable;
+                    img.setImageDrawable(drawable);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+//        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//        InputStream inputStream = urlConnection.getInputStream();
+//        SVG svg = SVGParser. getSVGFromInputStream(inputStream);
+//        Drawable drawable = svg.createPictureDrawable();
+//        return drawable;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_image);
+
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        storageRef = storage.getReference();
 
 //        names=  new Vector<>();
 //        names.add("square");
@@ -264,6 +382,7 @@ public class showImage extends AppCompatActivity {
         Toast.makeText(this, "file is: "+diagFile,Toast.LENGTH_SHORT).show();
 
 
+
 //        String x1 = valueOf(corners.get(0)[0]);
 //        String y1 = valueOf(corners.get(0)[1]);
 //        String x2 = valueOf(corners.get(0)[2]);
@@ -278,7 +397,9 @@ public class showImage extends AppCompatActivity {
 //        int resID = getResId("icon", R.drawable.class);
         int id = getId(name,R.drawable.class);
         Log.d("ID", valueOf(id));
-        img.setImageResource(id);
+//        img.setImageResource(id);
+
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -286,10 +407,58 @@ public class showImage extends AppCompatActivity {
         int height = size.y;
         Log.e("Width", "" + width);
         Log.e("height", "" + height);
+
+
 //        int minwh = Integer.min(width,height);
         img.setLayoutParams(new ConstraintLayout.LayoutParams(width,height));
 //        Log.d("Position:", "x: "+String.valueOf(viewCoords[0])+" and y: "+String.valueOf(viewCoords[1]));
 //        Log.d("image coord:", "x: "+String.valueOf(img.getWidth())+" and y: "+String.valueOf(img.getHeight()));
+//        storeFile();
+//        showImageUsingURL(storageRef,diagFile);
+
+//        try {
+//            File file = this.openFileInput(diagFile);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+        InputStream inputStream = null;
+        try {
+            inputStream = this.openFileInput(diagFile);
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            BufferedReader br = new BufferedReader(isr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                Log.e(TAG,line);
+            }
+
+//            inputStream = this.openFileInput(diagFile);
+//
+//
+//            SVG svg = SVGParser.getSVGFromInputStream(inputStream);
+//            Drawable drawable = svg.createPictureDrawable();
+////                    return drawable;
+//            img.setImageDrawable(drawable);
+            Toast.makeText(this, "img drawable set", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.e(TAG,"diagFile not found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        storageRef.child(diagFile).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+              @Override
+              public void onComplete(@NonNull Task<Uri> task) {
+                  if (task.isSuccessful()) {
+                      Toast.makeText(showImage.this, "uri: " + task.getResult().toString(), Toast.LENGTH_SHORT).show();
+                      Log.e(TAG, "uri: " + task.getResult().toString());
+                      uri = task.getResult();
+
+                      HttpImageRequestTask t = new HttpImageRequestTask();
+                      t.execute();
+                  }
+              }
+          });
 
         img.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -334,5 +503,61 @@ public class showImage extends AppCompatActivity {
     @Override
     public void onWindowFocusChanged (boolean hasFocus) {
 
+    }
+
+    private class HttpImageRequestTask extends AsyncTask<Void, Void, Drawable> {
+        @Override
+        protected Drawable doInBackground(Void... params) {
+            try {
+
+
+                    URL url = new URL(uri.toString());
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream inputStream = urlConnection.getInputStream();
+                    SVG svg = SVGParser.getSVGFromInputStream(inputStream);
+                    Drawable drawable = svg.createPictureDrawable();
+                    return drawable;
+
+//                        addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//
+//                    }
+//                }).addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                    @Override
+//                    public void onSuccess(Uri uri) {
+//
+//                    }
+//                });
+
+
+//                final URL url = new URL("http://upload.wikimedia.org/wikipedia/commons/e/e8/Svg_example3.svg");
+//                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+//                InputStream inputStream = urlConnection.getInputStream();
+//                SVG svg = SVGParser. getSVGFromInputStream(inputStream);
+//                Drawable drawable = svg.createPictureDrawable();
+//                return drawable;
+            } catch (Exception e) {
+                Log.e("MainActivity", e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Drawable drawable) {
+            // Update the view
+            updateImageView(drawable);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void updateImageView(Drawable drawable){
+        if(drawable != null){
+
+            // Try using your library and adding this layer type before switching your SVG parsing
+            img.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            img.setImageDrawable(drawable);
+        }
     }
 }

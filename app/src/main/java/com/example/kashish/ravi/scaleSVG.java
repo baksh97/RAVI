@@ -1,20 +1,38 @@
 package com.example.kashish.ravi;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Context.MODE_WORLD_READABLE;
 
 public class scaleSVG {
+
+    private static final String TAG = "scaleSVG";
+    boolean fileSaved = false;
+
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
      int globalMinX = Integer.MAX_VALUE;
      int globalMinY = Integer.MAX_VALUE;
@@ -42,31 +60,42 @@ public class scaleSVG {
 
     }
 
-      void writeFile(Context context,String fileName){
+      void writeFile(final Context context, String fileName){
 //		String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
-
+          String largeString = "";
+          File file = new File(fileName);
           FileOutputStream outputStream;
+          FileInputStream inputStream;
           try {
               outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
 //              outputStream.write(fileContents.getBytes());
-              for(int i=0;i<otherStrings.size()-1;i++) {
-                  outputStream.write(otherStrings.get(i).getBytes());
-                  outputStream.write("\n".getBytes());
+//              for(int i=0;i<otherStrings.size()-1;i++) {
+//                  outputStream.write(otherStrings.get(i).getBytes());
+//                  outputStream.write("\n".getBytes());
+//
+//              }
+              String others1 = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
+              String others2 = "<svg width=\'"+String.valueOf((int)displayX)+"\' height=\'"+String.valueOf((int)displayY)+"\' xmlns=\"http://www.w3.org/2000/svg\">\n";
+              outputStream.write(others1.getBytes());
+              outputStream.write(others2.getBytes());
 
-              }
+              largeString += others1+others2;
 
+              Log.d(TAG,"lines.length(): "+lines.size());
 
               for(int i=0;i<lines.size();i++) {
                   ArrayList<Integer> al = lines.get(i);
 
                   String s = "<line"+ " x1=\'"+String.valueOf(al.get(0))+"\' y1=\'"+String.valueOf(al.get(1))+"\' x2=\'"+String.valueOf(al.get(2))+"\' y2=\'"+String.valueOf(al.get(3))+ "\' stroke-width=\'2\' stroke=\'black\'/>\n";
+                  largeString += s;
                   outputStream.write(s.getBytes());
               }
 
               for(int i=0;i<circles.size();i++) {
                   ArrayList<Integer> al = circles.get(i);
 
-                  String s = "<circle"+ " cx=\'"+String.valueOf(al.get(0))+"\' cy=\'"+String.valueOf(al.get(1))+"\' r=\'"+String.valueOf(al.get(2))+"\' stroke-width=\'2\' stroke=\'black\'/>\n";
+                  String s = "<circle"+ " cx=\'"+String.valueOf(al.get(0))+"\' cy=\'"+String.valueOf(al.get(1))+"\' r=\'"+String.valueOf(al.get(2))+"\' stroke-width=\'2\' stroke=\'black\'  fill=\'none\' stroke-opacity=\'2\' opacity=\'2\'/>\n";
+                  largeString += s;
                   outputStream.write(s.getBytes());
               }
 
@@ -74,10 +103,45 @@ public class scaleSVG {
                   ArrayList<Integer> al = ellipses.get(i);
 
                   String s = "<ellipse"+ " cx=\'"+String.valueOf(al.get(0))+"\' cy=\'"+String.valueOf(al.get(1))+"\' rx=\'"+String.valueOf(al.get(2))+"\' ry=\'"+String.valueOf(al.get(3))+ "\' stroke-width=\'2\' stroke=\'black\'/>\n";
+                  largeString += s;
                   outputStream.write(s.getBytes());
               }
 
+              outputStream.write("</svg>".getBytes());
+
               outputStream.close();
+
+              Log.d(TAG,"largeString: "+largeString);
+//              File file =
+              inputStream = context.openFileInput(fileName);
+
+              FirebaseStorage storage = FirebaseStorage.getInstance();
+//
+              StorageReference storageRef = storage.getReference();
+
+// Create a reference to "mountains.jpg"
+              StorageReference mountainsRef = storageRef.child(fileName);
+
+//              final boolean filesaved = false;
+
+              UploadTask uploadTask = mountainsRef.putStream(inputStream);
+              uploadTask.addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception exception) {
+                      // Handle unsuccessful uploads
+                      Toast.makeText(context, "could not save file", Toast.LENGTH_SHORT).show();
+                  }
+              }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                  @Override
+                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                      // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                      // ...
+                      fileSaved = true;
+                      Toast.makeText(context, "file saved", Toast.LENGTH_SHORT).show();
+//                      return true;
+                  }
+              });
+//              inputStream.close();
           } catch (IOException e) {
               e.printStackTrace();
           }
@@ -154,6 +218,8 @@ public class scaleSVG {
 
     public void scale(Context context,String fileName,int width, int height) {
 
+
+
         displayX = width;
         displayY = height;
 //        String fileName = "Circle.svg";
@@ -164,15 +230,17 @@ public class scaleSVG {
         lines = new ArrayList<>();
         BufferedReader br;
         try {
-            br = new BufferedReader(new FileReader(file));
+            br = new BufferedReader(new InputStreamReader(context.getAssets().open(fileName)));
 
             String st;
             while ((st = br.readLine()) != null) {
-                System.out.println(st);
+//                System.out.println(st);
 //		    System.out.println(st);
 
-                if(st.contains("svg"))
-                if(st.contains("line")) {
+                if(st.contains("svg")){
+
+                }
+                else if(st.contains("line")) {
                     st.replace('<', ' ');
                     st = st.replaceAll("\\s+", "");
                     st.replaceFirst("line", "");
@@ -304,7 +372,7 @@ public class scaleSVG {
             }
 
             scaleImage();
-            writeFile(context,"updated_"+fileName);
+            writeFile(context,fileName);
 
 
 
