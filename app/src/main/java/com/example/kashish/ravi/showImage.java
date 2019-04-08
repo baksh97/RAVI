@@ -2,8 +2,12 @@ package com.example.kashish.ravi;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -19,12 +23,15 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.BitSet;
 import java.util.Vector;
 
 import static java.lang.String.valueOf;
@@ -32,6 +39,7 @@ import static java.lang.String.valueOf;
 public class showImage extends AppCompatActivity {
 
 
+    private static final String TAG = "showImage";
     double scale=1;
     ImageView img;
     int[] viewCoords = new int[2];
@@ -67,15 +75,23 @@ public class showImage extends AppCompatActivity {
         }
     }
 
-    void readSVG(String file){
+    void readSVG(String fileName){
         BufferedReader reader = null;
         try {
             corners = new Vector<>();
             circles = new Vector<>();
             ellipses = new Vector<>();
 
-            FileInputStream fis = openFileInput("updated_"+file);
+            AssetManager am = this.getAssets();
+//            File file = new File(fileName);
+            InputStream fis = am.open(fileName);
+
+            Log.e(TAG,"updated file: "+fileName);
+//            reader = new BufferedReader(new FileReader(file));
             InputStreamReader isr = new InputStreamReader(fis);
+            Bitmap bmp = null;
+            bmp = BitmapFactory.decodeStream(fis);
+            img.setImageBitmap(bmp);
             BufferedReader bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             String line;
@@ -93,6 +109,7 @@ public class showImage extends AppCompatActivity {
                     for(int j=0;j<tags.length;j++){
                         if(a[i].contains(tags[j])){
                             tagId = j;
+                            Log.e(TAG,"found tag: "+tagId);
                         }
                     }
 
@@ -123,6 +140,8 @@ public class showImage extends AppCompatActivity {
                                 cor1[1] = y1;
                                 cor1[2] = x2;
                                 cor1[3] = y2;
+
+                                Log.e(TAG,"ADding corner: "+cor1[0]+" "+cor1[1]+" "+cor1[2]+" "+cor1[3]);
 //                                cor2[0] = x2;
 //                                cor2[1] = y2;
 
@@ -132,12 +151,15 @@ public class showImage extends AppCompatActivity {
                                 break;
                             }
                             case 3: {
+                                Log.e(TAG,"found circle");
                                 int[] cor = new int[3];
                                 a[i] = a[i].replaceAll("\\s+", "");
 
                                 int cxpos = a[i].indexOf("cx=");
                                 int cypos = a[i].indexOf("cy=");
                                 int rpos = a[i].indexOf("r=");
+
+
 
 //                                Toast.makeText(this, "rPos: "+String.valueOf(rpos),Toast.LENGTH_SHORT).show();
 
@@ -150,6 +172,8 @@ public class showImage extends AppCompatActivity {
 
 
                                 int r = Integer.parseInt(a[i].substring(rpos + 4, index));
+
+                                Log.e(TAG,"cx: "+cx+", cy: "+cy+" and r: "+r);
 
                                 cor[0] = cx;
                                 cor[1] = cy;
@@ -168,7 +192,10 @@ public class showImage extends AppCompatActivity {
                     }
                 }
             }
-            reader.close();
+//            reader.close();
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -236,7 +263,6 @@ public class showImage extends AppCompatActivity {
 
         Toast.makeText(this, "file is: "+diagFile,Toast.LENGTH_SHORT).show();
 
-        readSVG(diagFile);
 
 //        String x1 = valueOf(corners.get(0)[0]);
 //        String y1 = valueOf(corners.get(0)[1]);
@@ -245,23 +271,6 @@ public class showImage extends AppCompatActivity {
 
 //        Toast.makeText(this, "corner[0] is: "+x1+" "+y1+" "+x2+" "+y2,Toast.LENGTH_SHORT).show();
         img = (ImageView) findViewById(R.id.imageView);
-//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int)(img.getWidth()*scale), (int)(img.getHeight()*scale));
-//        img.setLayoutParams(layoutParams);
-//        img.setLayoutParams().height = ;
-    }
-
-    public static int getId(String resourceName, Class<?> c) {
-        try {
-            Field idField = c.getDeclaredField(resourceName);
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            throw new RuntimeException("No resource ID found for: "
-                    + resourceName + " / " + c, e);
-        }
-    }
-
-    @Override
-    public void onWindowFocusChanged (boolean hasFocus) {
         img.getLocationOnScreen(viewCoords);
         String name = "ic_"+diagFile.toLowerCase().substring(0,diagFile.length()-4);
         Log.d("Name",name);
@@ -275,8 +284,8 @@ public class showImage extends AppCompatActivity {
         display.getSize(size);
         int width = size.x;
         int height = size.y;
-//        Log.e("Width", "" + width);
-//        Log.e("height", "" + height);
+        Log.e("Width", "" + width);
+        Log.e("height", "" + height);
 //        int minwh = Integer.min(width,height);
         img.setLayoutParams(new ConstraintLayout.LayoutParams(width,height));
 //        Log.d("Position:", "x: "+String.valueOf(viewCoords[0])+" and y: "+String.valueOf(viewCoords[1]));
@@ -305,5 +314,25 @@ public class showImage extends AppCompatActivity {
                 return true;
             }
         });
+        readSVG(diagFile);
+
+//        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams((int)(img.getWidth()*scale), (int)(img.getHeight()*scale));
+//        img.setLayoutParams(layoutParams);
+//        img.setLayoutParams().height = ;
+    }
+
+    public static int getId(String resourceName, Class<?> c) {
+        try {
+            Field idField = c.getDeclaredField(resourceName);
+            return idField.getInt(idField);
+        } catch (Exception e) {
+            throw new RuntimeException("No resource ID found for: "
+                    + resourceName + " / " + c, e);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged (boolean hasFocus) {
+
     }
 }

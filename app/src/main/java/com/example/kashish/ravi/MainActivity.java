@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.Vector;
 
 public class MainActivity extends AppCompatActivity {
 
+    String TAG = "MainActivity";
     private Spinner s;
     public static Vector<Vector<int[]>> corners;
     public static List<String> list;
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         final ArrayList<String> files = new ArrayList<>();
         files.add("Complex1.svg");
-        files.add("Complex2.svg");
-        files.add("Circle.svg");
+        files.add("1_svg_1.svg");
+        files.add("Circle_1.svg");
         files.add("Rectangle.svg");
 //        files.add("Semicircle.svg");
         files.add("squre.svg");
@@ -67,10 +69,13 @@ public class MainActivity extends AppCompatActivity {
         int width = size.x;
         int height = size.y;
 
+        Toast.makeText(this, "Height: "+height+" and width: "+width, Toast.LENGTH_SHORT).show();
+        Log.e(TAG,"Height: "+height+" and width: "+width);
+
         scaleSVG ss = new scaleSVG();
         ss.scale(this, "Complex1.svg",width,height);
-        ss.scale(this, "Complex2.svg",width,height);
-        ss.scale(this, "Circle.svg",width,height);
+//        ss.scale(this, "Complex2.svg",width,height);
+//        ss.scale(this, "Circle.svg",width,height);
         ss.scale(this, "Rectangle.svg",width,height);
         ss.scale(this, "squre.svg",width,height);
         ss.scale(this, "Star.svg",width,height);
