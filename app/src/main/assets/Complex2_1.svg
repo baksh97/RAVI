@@ -1,0 +1,9 @@
+<?xml version="1.0" standalone="no"?>
+    <svg width='1080' height='1920' xmlns="http://www.w3.org/2000/svg">
+    <line x1='539' y1='39' x2='1039' y2='539' stroke-width='2' stroke='black'/>
+    <line x1='1039' y1='539' x2='39' y2='539' stroke-width='2' stroke='black'/>
+    <line x1='39' y1='539' x2='539' y2='39' stroke-width='2' stroke='black'/>
+    <line x1='539' y1='39' x2='789' y2='539' stroke-width='2' stroke='black'/>
+    <line x1='789' y1='539' x2='423' y2='156' stroke-width='2' stroke='black'/>
+    <line x1='423' y1='156' x2='606' y2='539' stroke-width='2' stroke='black'/>
+</svg>

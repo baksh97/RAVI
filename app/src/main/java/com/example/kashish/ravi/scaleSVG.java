@@ -61,7 +61,6 @@ public class scaleSVG {
     }
 
       void writeFile(final Context context, String fileName){
-//		String fileContent = "Hello Learner !! Welcome to howtodoinjava.com.";
           String largeString = "";
           File file = new File(fileName);
           FileOutputStream outputStream;
@@ -145,23 +144,16 @@ public class scaleSVG {
           } catch (IOException e) {
               e.printStackTrace();
           }
-
-//          BufferedWriter writer;
-//        try {
-//            writer = new BufferedWriter(new FileWriter(fileName));
-//
-//
-//            writer.write(otherStrings.get(otherStrings.size()-1));
-//
-////			writer.write(fileContent);
-//            writer.close();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
         }
 
      void scaleImage() {
-        scale = Double.min((displayX-2*marginX)/(globalMaxX-globalMinX), (displayY-2*marginY)/(globalMaxY-globalMinY));
+         double xs1 = (displayX-2*marginX),xs2 = (globalMaxX-globalMinX);
+         double xscale = xs1/xs2;
+         double yscale = (displayY-2*marginY)/(globalMaxY-globalMinY);
+
+         Log.d(TAG,"xs1: "+xs1+" and xs2: "+xs2);
+
+        scale = Double.min(xscale, yscale);
 
         minusX = globalMinX - marginX;
         minusY = globalMinY - marginY;
@@ -196,6 +188,9 @@ public class scaleSVG {
         }
 
         for(ArrayList<Integer> al: circles) {
+
+
+
             int cx = al.get(0);
             int cy = al.get(1);
             int r = al.get(2);
@@ -210,6 +205,8 @@ public class scaleSVG {
 
             r *= scale;
 
+            Log.d(TAG,"updated coordinates: cx = "+cx+", cy="+cy+" and r="+r+" with scale: "+scale);
+
             al.set(0, cx);
             al.set(1, cy);
             al.set(2, r);
@@ -218,7 +215,10 @@ public class scaleSVG {
 
     public void scale(Context context,String fileName,int width, int height) {
 
-
+        globalMinX = Integer.MAX_VALUE;
+        globalMinY = Integer.MAX_VALUE;
+        globalMaxX = Integer.MIN_VALUE;
+        globalMaxY = Integer.MIN_VALUE;
 
         displayX = width;
         displayY = height;
@@ -300,6 +300,8 @@ public class scaleSVG {
 
                     int r = Integer.parseInt(st.substring(rpos + 3, index));
 
+                    Log.d(TAG,"radius: "+r);
+
                     int maxX = cx+r;
                     int maxY = cy+r;
                     int minY = cy-r;
@@ -311,6 +313,7 @@ public class scaleSVG {
                     al.add(r);
 //		    		al.add(y2);
 
+                    Log.d(TAG,"updating maxMin with: maxX: "+maxX+" and minX: "+minX);
                     updateMaxMin(maxX, maxY, minX, minY);
                     circles.add(al);
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="no"?>
+    <svg width='1080' height='1920' xmlns="http://www.w3.org/2000/svg">
+    <line x1='40' y1='40' x2='1040' y2='40' stroke-width='2' stroke='black'/>
+    <line x1='1040' y1='40' x2='1040' y2='1040' stroke-width='2' stroke='black'/>
+    <line x1='1040' y1='1040' x2='40' y2='1040' stroke-width='2' stroke='black'/>
+    <line x1='40' y1='1040' x2='40' y2='40' stroke-width='2' stroke='black'/>
+    </svg>

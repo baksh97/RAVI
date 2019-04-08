@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<svg width='1080' height='1920' xmlns="http://www.w3.org/2000/svg">
+    <line x1='40' y1='290' x2='1040' y2='290' stroke-width='2' stroke='black'/>
+    <line x1='40' y1='290' x2='790' y2='40' stroke-width='2' stroke='black'/>
+    <line x1='790' y1='40' x2='1040' y2='290' stroke-width='2' stroke='black'/>
+    <line x1='40' y1='290' x2='790' y2='540' stroke-width='2' stroke='black'/>
+    <line x1='790' y1='540' x2='1040' y2='290' stroke-width='2' stroke='black'/>
+    <line x1='390' y1='172' x2='540' y2='290' stroke-width='2' stroke='black'/>
+    <line x1='540' y1='290' x2='390' y2='407' stroke-width='2' stroke='black'/>
+</svg>

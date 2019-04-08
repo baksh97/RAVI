@@ -1,13 +1,9 @@
 package com.example.kashish.ravi;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.Build;
-import android.os.VibrationEffect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -18,9 +14,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -56,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
 
         final ArrayList<String> files = new ArrayList<>();
         files.add("Complex1.svg");
-        files.add("1_svg_1.svg");
+        files.add("Complex2.svg");
         files.add("Circle.svg");
         files.add("Rectangle.svg");
 //        files.add("Semicircle.svg");
-        files.add("squre.svg");
+        files.add("Square.svg");
         files.add("Star.svg");
-        files.add("triangle.svg");
+        files.add("Triangle.svg");
         files.add("Ellipse.svg");
 
 
@@ -80,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
         ss.scale(this, "Complex2.svg",width,height);
         ss.scale(this, "Circle.svg",width,height);
         ss.scale(this, "Rectangle.svg",width,height);
-        ss.scale(this, "squre.svg",width,height);
+        ss.scale(this, "Square.svg",width,height);
         ss.scale(this, "Star.svg",width,height);
-        ss.scale(this, "traingle.svg",width,height);
+        ss.scale(this, "Triangle.svg",width,height);
         ss.scale(this, "Ellipse.svg",width,height);
 
         s = (Spinner) findViewById(R.id.spinner);

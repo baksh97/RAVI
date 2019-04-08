@@ -68,7 +68,7 @@ public class showImage extends AppCompatActivity {
     Thread vibrate;
     int imageX,imageY;
     String diagFile;
-    int threshold = 20;
+    int threshold = 50;
 
     String[] tags = {"path","line","ellipse","circle","rectangle","square" };
 
@@ -352,13 +352,13 @@ public class showImage extends AppCompatActivity {
 //        Toast.makeText(this, "corner[0] is: "+x1+" "+y1+" "+x2+" "+y2,Toast.LENGTH_SHORT).show();
         img = (ImageView) findViewById(R.id.imageView);
         img.getLocationOnScreen(viewCoords);
-        String name = "ic_"+diagFile.toLowerCase().substring(0,diagFile.length()-4);
+        String name = "ic_"+diagFile.toLowerCase().substring(0,diagFile.length()-4)+"_1";
         Log.d("Name",name);
 //        int id = getResources().getIdentifier(name, "drawable", getPackageName());
 //        int resID = getResId("icon", R.drawable.class);
         int id = getId(name,R.drawable.class);
         Log.d("ID", valueOf(id));
-//        img.setImageResource(id);
+        img.setImageResource(id);
 
 
         Display display = getWindowManager().getDefaultDisplay();
@@ -382,30 +382,30 @@ public class showImage extends AppCompatActivity {
 //        } catch (FileNotFoundException e) {
 //            e.printStackTrace();
 //        }
-        InputStream inputStream = null;
-        try {
-            inputStream = this.openFileInput(diagFile);
-            InputStreamReader isr = new InputStreamReader(inputStream);
-            BufferedReader br = new BufferedReader(isr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                Log.e(TAG,line);
-            }
-
-            inputStream = this.openFileInput(diagFile);
-
-
-            SVG svg = SVGParser.getSVGFromInputStream(inputStream);
-            Drawable drawable = svg.createPictureDrawable();
-//                    return drawable;
-            img.setImageDrawable(drawable);
-            Toast.makeText(this, "img drawable set", Toast.LENGTH_SHORT).show();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Log.e(TAG,"diagFile not found");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        InputStream inputStream = null;
+//        try {
+//            inputStream = this.openFileInput(diagFile);
+//            InputStreamReader isr = new InputStreamReader(inputStream);
+//            BufferedReader br = new BufferedReader(isr);
+//            String line;
+//            while ((line = br.readLine()) != null) {
+//                Log.e(TAG,line);
+//            }
+//
+//            inputStream = this.openFileInput(diagFile);
+//
+//
+//            SVG svg = SVGParser.getSVGFromInputStream(inputStream);
+//            Drawable drawable = svg.createPictureDrawable();
+////                    return drawable;
+//            img.setImageDrawable(drawable);
+//            Toast.makeText(this, "img drawable set", Toast.LENGTH_SHORT).show();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            Log.e(TAG,"diagFile not found");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 //        storageRef.child(diagFile).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
 //              @Override
