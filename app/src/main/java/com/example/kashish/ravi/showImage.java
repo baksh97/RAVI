@@ -98,46 +98,7 @@ public class showImage extends AppCompatActivity {
     }
 
     void readSVG(String fileName){
-//        BufferedReader reader = null;
-//        try {
 
-
-
-//        try {
-//            FirebaseStorage storage = FirebaseStorage.getInstance();
-////
-//            StorageReference storageRef = storage.getReference();
-////
-//            StorageReference islandRef = storageRef.child(fileName);
-//            File localFile = File.createTempFile(fileName.split(".")[0],"svg");
-//
-//            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    // Local temp file has been created
-//                }
-//            }).addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception exception) {
-//                    // Handle any errors
-//                }
-//            });
-////
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
-
-//        try {
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//            islandRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-//                    // Local temp file has been created
 //
                     try {
                         File file = new File(fileName);
@@ -431,13 +392,13 @@ public class showImage extends AppCompatActivity {
                 Log.e(TAG,line);
             }
 
-//            inputStream = this.openFileInput(diagFile);
-//
-//
-//            SVG svg = SVGParser.getSVGFromInputStream(inputStream);
-//            Drawable drawable = svg.createPictureDrawable();
-////                    return drawable;
-//            img.setImageDrawable(drawable);
+            inputStream = this.openFileInput(diagFile);
+
+
+            SVG svg = SVGParser.getSVGFromInputStream(inputStream);
+            Drawable drawable = svg.createPictureDrawable();
+//                    return drawable;
+            img.setImageDrawable(drawable);
             Toast.makeText(this, "img drawable set", Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -446,19 +407,19 @@ public class showImage extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        storageRef.child(diagFile).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
-              @Override
-              public void onComplete(@NonNull Task<Uri> task) {
-                  if (task.isSuccessful()) {
-                      Toast.makeText(showImage.this, "uri: " + task.getResult().toString(), Toast.LENGTH_SHORT).show();
-                      Log.e(TAG, "uri: " + task.getResult().toString());
-                      uri = task.getResult();
-
-                      HttpImageRequestTask t = new HttpImageRequestTask();
-                      t.execute();
-                  }
-              }
-          });
+//        storageRef.child(diagFile).getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+//              @Override
+//              public void onComplete(@NonNull Task<Uri> task) {
+//                  if (task.isSuccessful()) {
+//                      Toast.makeText(showImage.this, "uri: " + task.getResult().toString(), Toast.LENGTH_SHORT).show();
+//                      Log.e(TAG, "uri: " + task.getResult().toString());
+//                      uri = task.getResult();
+//
+//                      HttpImageRequestTask t = new HttpImageRequestTask();
+//                      t.execute();
+//                  }
+//              }
+//          });
 
         img.setOnTouchListener(new View.OnTouchListener() {
             @Override

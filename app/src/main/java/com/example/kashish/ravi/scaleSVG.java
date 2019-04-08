@@ -113,34 +113,34 @@ public class scaleSVG {
 
               Log.d(TAG,"largeString: "+largeString);
 //              File file =
-              inputStream = context.openFileInput(fileName);
-
-              FirebaseStorage storage = FirebaseStorage.getInstance();
+//              inputStream = context.openFileInput(fileName);
 //
-              StorageReference storageRef = storage.getReference();
-
-// Create a reference to "mountains.jpg"
-              StorageReference mountainsRef = storageRef.child(fileName);
-
-//              final boolean filesaved = false;
-
-              UploadTask uploadTask = mountainsRef.putStream(inputStream);
-              uploadTask.addOnFailureListener(new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception exception) {
-                      // Handle unsuccessful uploads
-                      Toast.makeText(context, "could not save file", Toast.LENGTH_SHORT).show();
-                  }
-              }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                  @Override
-                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                      // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
-                      // ...
-                      fileSaved = true;
-                      Toast.makeText(context, "file saved", Toast.LENGTH_SHORT).show();
-//                      return true;
-                  }
-              });
+//              FirebaseStorage storage = FirebaseStorage.getInstance();
+////
+//              StorageReference storageRef = storage.getReference();
+//
+//// Create a reference to "mountains.jpg"
+//              StorageReference mountainsRef = storageRef.child(fileName);
+//
+////              final boolean filesaved = false;
+//
+//              UploadTask uploadTask = mountainsRef.putStream(inputStream);
+//              uploadTask.addOnFailureListener(new OnFailureListener() {
+//                  @Override
+//                  public void onFailure(@NonNull Exception exception) {
+//                      // Handle unsuccessful uploads
+//                      Toast.makeText(context, "could not save file", Toast.LENGTH_SHORT).show();
+//                  }
+//              }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                  @Override
+//                  public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                      // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+//                      // ...
+//                      fileSaved = true;
+//                      Toast.makeText(context, "file saved", Toast.LENGTH_SHORT).show();
+////                      return true;
+//                  }
+//              });
 //              inputStream.close();
           } catch (IOException e) {
               e.printStackTrace();
